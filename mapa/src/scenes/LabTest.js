@@ -1,10 +1,10 @@
-// src/scenes/Lab.js
+// src/scenes/LabTest.js
 import {Scene} from "phaser";
 import { CONFIG } from "../config";
 import Player from "../entities/Player";
 import Touch from "../entities/Touch";
 
-export default class Lab extends Scene {
+export default class LabTest extends Scene {
 
     /** @type {Phaser.Tilemaps.Tilemap} */
     map;
@@ -19,16 +19,25 @@ export default class Lab extends Scene {
     /** @type {Phaser.Physics.Arcade.Group} */
     groupObjects;
 
+    /** @type {Phaser.Physics.Arcade.Sprite} */
+    trashBin;
+
+    /** @type {Phaser.Physics.Arcade.Sprite} */
+    blueTrash;
+
+    /** @type {Phaser.Physics.Arcade.Sprite} */
+    orangeTrash;
+
+    /** @type {Phaser.Physics.Arcade.Text} */
+    aviso;
+
+
     //Adicionada na aula de 8/Maio
     isTouching = false; 
 
-    /**@type {Phaser.GameObjects.Sprite}*/
-    trashOrange;
-    trashBlue ;
-    
 
     constructor(){
-        super('Lab'); // Salvando o nome desta cena
+        super('LabTest'); // Salvando o nome desta cena
 
     }
 
@@ -48,7 +57,7 @@ export default class Lab extends Scene {
             frameHeight: CONFIG.TILE_SIZE * 2 // ocupa 2 tiles = 16 x 16*2 
         })
 
-        this.load.spritesheet('lixeira', 'lixeiras_spritesheet.png', {
+        this.load.spritesheet('trashBin', 'lixeiras_spritesheet.png', {
             frameWidth: CONFIG.TILE_SIZE,
             frameHeight: CONFIG.TILE_SIZE * 2 // ocupa 2 tiles = 16 x 16*2 
         })
@@ -60,29 +69,23 @@ export default class Lab extends Scene {
         this.createLayers();
         this.createObjects();   // adicionado aula de 8/maio
         this.createPlayer();
-
-        //this.createDialog();
-        //this.createLixeiras();
+        this.createTrash();
 
         //this.player = new Player(this, 144, 90);
         
         this.createCamera();
         this.createColliders();
 
+        const format = { color: '#000', fontSize: 8, backgroundColor: '#fff', padding: 5 }
+        this.text = this.add.text(this.scale.width / 2, this.scale.height - this.scale.height / 5, "", format);
+        this.text.setScrollFactor(0);
+        this.text.setOrigin(0.5, 0);
+        this.text.visible = false;
+
     }
 
     update(){
 
-        // ****** sugerstão da aula de 22/05 (Adicionar)
-        /*const { space } = this.cursors;
-
-        if( space.isDown ){
-            if (this.trashOrange.frame.name === 0){
-                this.trashOrange.setFrame(1);
-            }else{
-                this.trashOrange.setFrame(0);
-            }
-        }*/
     }
 
     createPlayer(){
@@ -108,7 +111,7 @@ export default class Lab extends Scene {
         this.map.addTilesetImage('tiles_office', 'Office');
         this.map.addTilesetImage('tiles_floors', 'Floors');
         this.map.addTilesetImage('tiles_walls', 'Walls');
-        this.map.addTilesetImage('lixeiras_spritesheet', 'Trash');
+        //this.map.addTilesetImage('lixeiras_spritesheet', 'Trash');
 
     }
 
@@ -117,7 +120,7 @@ export default class Lab extends Scene {
         const tilesOffice = this.map.getTileset('tiles_office');
         const tilesWalls = this.map.getTileset('tiles_walls');
         const tilesFloors = this.map.getTileset('tiles_floors');
-        const tilesTrash = this.map.getTileset('lixeiras_spritesheet');
+        //const tilesTrash = this.map.getTileset('lixeiras_spritesheet');
 
         const layerNames = this.map.getTileLayerNames();
         //console.log(layerNames);
@@ -125,8 +128,8 @@ export default class Lab extends Scene {
             const name = layerNames[i];
 
             //this.map.createLayer(name, [tilesOffice], 0, 0); // retirado na aula
-            //this.layers[name] = this.map.createLayer(name, [tilesOffice, tilesFloors, tilesWalls], 0, 0);
-            this.layers[name] = this.map.createLayer(name, [tilesOffice, tilesFloors, tilesWalls, tilesTrash], 0, 0);
+            this.layers[name] = this.map.createLayer(name, [tilesOffice, tilesFloors, tilesWalls], 0, 0);
+            //this.layers[name] = this.map.createLayer(name, [tilesOffice, tilesFloors, tilesWalls, tilesTrash], 0, 0);
            
             
             // Definindo a profundidade de cada camada
@@ -149,24 +152,6 @@ export default class Lab extends Scene {
        }
     }
 
-    // ****** sugestão da aula de 22/05 (Adicionar)
-    /*createDialog(){
-        this.dialog = this.add.container(0, 0).setDepth(10);
-
-        const tile = CONFIG.TILE_SIZE;
-        const withDialog = CONFIG.GAME_WIDTH - (2 * CONFIG.TILE_SIZE);
-
-        this.dialog.add(
-            [
-                this.add.image(0,0 ,0 'hud', 'dialog_topleft'),
-                this.add.image(16,0 ,0 'hud', 'dialog_top'),
-                    setDisplSize(withDialog, tile),
-                this.add.image(withDialog+tile, 0, 'hud', 'dialog_topright')
-            ]
-        );
-
-
-    }*/
 
     // adicionado na aula de 8/maio => criar um grupo para o objeto
     createObjects(){
@@ -174,61 +159,46 @@ export default class Lab extends Scene {
 
         // Criando sprites para cada objeto que vier da camada de objetos do Tiled
         // Parametros: nome da camada no Tiles, Propriedades de seleçao
-        const objects = this.map.createFromObjects("Objetos", {
-            name: "cadeira",
-            //name: "lixeira",
+        const objects = this.map.createFromObjects("Objetos", [
             // Qual imagem será carregada no sprite (SE HOUVER)
             // key: "player"  // Define a imagem a ser colocada no objeto
-        });
+         {   name: "cadeira"}
+        ,{   name: "lixeira"}
+        ,{   name: "aviso"}
+        ]);
 
-        const objLixo = this.map.createFromObjects("ObjLixo", {
-            name: "lixeira",
-        });
+        // const objLixo = this.map.createFromObjects("ObjLixo", {
+        //     name: "lixeira",
+        // });
         
 
         // Tornando todos os objetos, Sprites com Physics (que possuem body)
         this.physics.world.enable(objects);
-        this.physics.world.enable(objLixo);  // ***** Sugestão de modificação da aula 22/05 (Retirar)
+        //this.physics.world.enable(objLixo);
 
 
 
         for (let i = 0; i < objects.length; i++) {
             // Pegando o objeto atual
             const obj = objects[i];
-
             // Pegando as informações do Objeto definidas no Tiled
             const prop = this.map.objects[0].objects[i];
             //console.log(prop);
 
             obj.setDepth(this.layers.length+1); // Cadeira ficou preta, falta definir uma imagem
             obj.setVisible(false); // Tornando o objeto invisivel
-
-            //obj.prop = this.map.objects[0].objects[i].properties; // ***** Sugestao da aula 22/05 (Adicionar)
-
-            //console.log(obj);
-            //console.log(obj.prop);
+            obj.prop = this.map.objects[0].objects[i];
 
             this.groupObjects.add( obj );
 
+            //console.log(obj);
+
         }
-
-        /*for (let i = 0; i < objLixo.length; i++) {
-            // Pegando o objeto atual
-            const objl = objLixo[i];
-
-            objl.setDepth(this.layers.length+1); // Cadeira ficou preta, falta definir uma imagem
-            objl.setVisible(false); // Tornando o objeto invisivel
-
-            this.groupObjects.add( objl );
-
-            console.log(objl);
-
-        }*/
 
     }
     
-/*
-    createLayersManual(){
+
+    /*createLayersManual(){
         // pegando os tilesets
         const tilesOffice = this.map.getTileset('tiles_office');
         const tilesWalls = this.map.getTileset('tiles_walls');
@@ -244,8 +214,8 @@ export default class Lab extends Scene {
         //this.map.createLayer('Nivel1', [tilesFloors, tilesWalls, tilesOffice, tilesTrash], 0, 0);
         this.map.createLayer('Nivel1', [tilesFloors, tilesWalls, tilesOffice], 0, 0);
 
-        //this.map.createLayer('Nivel2', [tilesOffice], 0, 0);
-        this.map.createLayer('Nivel2', [tilesOffice, tilesTrash], 0, 0);
+        this.map.createLayer('Nivel2', [tilesOffice], 0, 0);
+        //this.map.createLayer('Nivel2', [tilesOffice, tilesTrash], 0, 0);
 
         this.map.createLayer('Nivel3', [tilesOffice], 0, 0);
         this.map.createLayer('Nivel4', [tilesOffice], 0, 0);
@@ -285,6 +255,16 @@ export default class Lab extends Scene {
 
     }
 
+    createTrash(){
+
+        this.redTrash = this.add.sprite(13 * CONFIG.TILE_SIZE, 2 * CONFIG.TILE_SIZE, 'trashBin', 'lixoVermelho')
+        .setOrigin(0, 0).setDepth(this.layers.length + 1).setFrame(1);
+        
+        this.blueTrash = this.add.sprite(14 * CONFIG.TILE_SIZE, 3 * CONFIG.TILE_SIZE, 'trashBin', 'lixoAzul')
+        .setOrigin(2, 0).setDepth(this.layers.length + 1).setFrame(3);  
+        
+    }
+
     //Adicionada na aula de 8/Maio
     handleTouch(touch, object){
 
@@ -303,14 +283,15 @@ export default class Lab extends Scene {
         // Acabou de apertar o ESPAÇO pela primeira vez e ainda nao iniciou o toque
         if (this.player.isAction){
             this.isTouching = true;
+
             if (object.name == "cadeira"){
+                console.log("Estou tocando cadeira");
                 if(this.player.body.enable == true){
                     this.player.body.enable = false;
-                    this.player.x = object.x -8;
-                    this.player.y = object.y -8;
+                    this.player.x = object.x -7;
+                    this.player.y = object.y -7;
 
-                    //this.player.setPosition = (object.x - 8, object.y - 8);
-
+                    //this.player.setPosition = (object.x - 7, object.y - 7);
                     //this.input.keyboard.removeAllKeys();
                     this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.UP);
                     this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
@@ -321,11 +302,9 @@ export default class Lab extends Scene {
                     this.player.direction = "up";
                     this.player.setDepth(0);
 
-
-
                 }else{
                     this.player.body.enable = true;
-                    this.player.setPosition = (object.x + 8, object.y + 8);
+                    this.player.setPosition = (object.x + 7, object.y + 7);
                     this.player.cursors = this.input.keyboard.addKeys({
                         up: Phaser.Input.Keyboard.KeyCodes.UP,
                         down: Phaser.Input.Keyboard.KeyCodes.DOWN,
@@ -341,36 +320,79 @@ export default class Lab extends Scene {
                
 
             }
-            //console.log("Estou tocando");
+            //console.log("Estou tocando ");
             //console.log(object);
+            if (object.name == "lixeira") {
+                console.log("Estou tocando lixeira");
+                if (this.player.body.enable == true) {
+                    this.player.body.enable = false;
+                    this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.UP);
+                    this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
+                    this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
+                    this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
+
+                    if (object.x == 263.439393939394) {
+                        if(this.redTrash.frame.name == 0){
+                            this.redTrash.setFrame(1);
+                        }else if(this.redTrash.frame.name == 1 && this.blueTrash.frame.name != 5){
+                            this.redTrash.setFrame(2);
+                        }else{
+                            this.redTrash.setFrame(0);
+                        }
+
+                    } else if (object.x == 280.25) {
+                        if(this.blueTrash.frame.name == 3){
+                            this.blueTrash.setFrame(4);
+                        }else if(this.blueTrash.frame.name == 4 && this.redTrash.frame.name != 2){
+                            this.blueTrash.setFrame(5);
+                        }else{
+                            this.blueTrash.setFrame(3);
+                        }
+                    }
+                } else {
+                    //console.log("TESTE");
+                    this.player.body.enable = true;
+                    this.player.cursors = this.input.keyboard.addKeys({
+                        up: Phaser.Input.Keyboard.KeyCodes.UP,
+                        down: Phaser.Input.Keyboard.KeyCodes.DOWN,
+                        left: Phaser.Input.Keyboard.KeyCodes.LEFT,
+                        right: Phaser.Input.Keyboard.KeyCodes.RIGHT,
+                        space: Phaser.Input.Keyboard.KeyCodes.SPACE
+                    });
+                    this.player.setDepth(2);
+                }
+            }
+
+
+
         }
 
 
     
-        if (this.player.isAction){
-            this.isTouching = true;
-            if (object.name == "lixeira"){
-                if(this.player.body.enable == true){
-                    this.player.body.enable = false;
-                    var LixAzul = this.add.sprite(360, 48, "lixeira", 1);
-                    var LixVermelha = this.add.sprite(345, 48, "lixeira", 4);
+        // if (this.player.isAction){
+        //     this.isTouching = true;
+        //     if (object.name == "lixeira"){
+        //         if(this.player.body.enable == true){
+        //             this.player.body.enable = false;
+        //             var LixAzul = this.add.sprite(360, 48, "lixeira", 1);
+        //             var LixVermelha = this.add.sprite(345, 48, "lixeira", 4);
 
-                    LixAzul = true;
-                    LixVermelha = false;
+        //             LixAzul = true;
+        //             LixVermelha = false;
 
 
-                }else{
+        //         }else{
 
-                    this.player.body.enable = true;
+        //             this.player.body.enable = true;
 
-                }
+        //         }
                
-            }
+        //     }
 
 
-            //console.log("Estou tocando");
-            //console.log(object);
-        }
+        //     //console.log("Estou tocando");
+        //     //console.log(object);
+        // }
 
 
         // aparece a mensagem quando aperta a barra de espaço
@@ -378,28 +400,10 @@ export default class Lab extends Scene {
             console.log("Estou tocando"); 
         }*/
 
-        // Antes de criar a condicional aparecia a mensagem 
+        // Antes de criar a condicional aparecia a a mensagem 
         // quando o player estava tocando o objeto 
         // console.log("Estou tocando"); 
 
     }
 
-
-
-// ******** SUGESTÃO da Aula de 22/05 (Adicionar)   
-    /*createLixeiras(){
-       this.trashOrange = this.add.sprite(3*CONFIG.TILE_SIZE, 4*CONFIG.TILE_SIZE, 'lixeira')
-           .set.Origin(0, 1)
-           .setDepht(this.layers.length+1)
-           .setFrame(0);
-    }*/
-
-
-
 }
-
-
-
-
-  
-  

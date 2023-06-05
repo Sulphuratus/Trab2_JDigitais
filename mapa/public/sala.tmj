@@ -133,6 +133,79 @@
                  "width":12,
                  "x":66,
                  "y":132.333
+                }, 
+                {
+                 "height":12,
+                 "id":7,
+                 "name":"aviso",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":12,
+                 "x":242.667,
+                 "y":12
+                }, 
+                {
+                 "height":12,
+                 "id":8,
+                 "name":"aviso",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":12,
+                 "x":258,
+                 "y":12.6667
+                }, 
+                {
+                 "height":13.3333333333333,
+                 "id":15,
+                 "name":"lixeira",
+                 "properties":[
+                        {
+                         "name":"local",
+                         "type":"string",
+                         "value":"parede"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":13.3333333333333,
+                 "x":192.666666666667,
+                 "y":39.3333333333333
+                }, 
+                {
+                 "height":13.3333,
+                 "id":16,
+                 "name":"lixeira",
+                 "properties":[
+                        {
+                         "name":"local",
+                         "type":"string",
+                         "value":"parede"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":13.3333,
+                 "x":209.33335,
+                 "y":39.33335
+                }, 
+                {
+                 "height":13.3333333333333,
+                 "id":17,
+                 "name":"cadeira",
+                 "properties":[
+                        {
+                         "name":"local",
+                         "type":"string",
+                         "value":"mesa"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":14,
+                 "x":208.666666666667,
+                 "y":132
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -143,8 +216,8 @@
         {
          "data":[0, 0, 0, 0, 0, 0, 2709, 2710, 2710, 2710, 2710, 2711, 0, 0, 0, 2437, 2438, 0,
             0, 2119, 0, 0, 0, 0, 2725, 2726, 2726, 2726, 2726, 2727, 0, 0, 0, 2453, 2454, 0,
-            0, 2135, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2433, 2435, 0, 0,
-            0, 2151, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2449, 2451, 0, 0,
+            0, 2135, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2865, 2868, 0, 0, 0, 0,
+            0, 2151, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2871, 2874, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 2418, 2419, 2419, 2420, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -254,8 +327,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":8,
- "nextobjectid":5,
+ "nextlayerid":11,
+ "nextobjectid":18,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.10.1",

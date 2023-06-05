@@ -192,6 +192,22 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
             repeat: -1
         });
 
+        this.anims.create({
+            key: 'sit-right',
+            frames: this.anims.generateFrameNumbers('player', {start: 52,end:57 }),
+            frameRate: this
+            .frameRate,
+            repeat: -1
+        });
+
+        this.anims.create({
+            key: 'sit-left',
+            frames: this.anims.generateFrameNumbers('player', {start: 58,end:63 }),
+            frameRate: this
+            .frameRate,
+            repeat: -1
+        });
+
     }
 
 
